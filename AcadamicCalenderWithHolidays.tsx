@@ -1,255 +1,243 @@
-import React, { JSX, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import {
-  Box,
-  Typography,
-  Button,
-  IconButton,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
-import dayjs, { Dayjs } from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween';
+import React, { useState } from "react";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+
 dayjs.extend(isBetween);
-import { useSelector } from 'react-redux';
 
-// Styled Components
-const GradientBox = styled(Box)`
-  background: linear-gradient(135deg, #f48665 0%, #fda23f 100%);
-  color: white;
-  border-radius: 8px;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-  padding: 16px;
-  margin-bottom: 16px;
-  text-align: center;
-  font-weight: bold;
-`;
-
-const StyledDate = styled(Box)`
-  border-radius: 8px;
-  background: #fff;
-  color: #000;
-  cursor: pointer;
-  font-weight: bold;
-  text-align: center;
-  font-size: 18px;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 0.2 / 0.1;
-  position: relative;
-
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-  }
-`;
+const mockHolidays = [
+  { name: "New Year's Day", start_date: "2025-01-01", end_date: "2025-01-01" },
+  { name: "New Year's Day", start_date: "2025-01-01", end_date: "2025-01-01" },
+  { name: "New Year's Day", start_date: "2025-01-01", end_date: "2025-01-01" },
+  { name: "New Year's Day", start_date: "2025-01-01", end_date: "2025-01-01" },
+  { name: "Family Day", start_date: "2025-01-01", end_date: "2025-01-01" },
+  {
+    name: "Independence Day",
+    start_date: "2025-07-04",
+    end_date: "2025-07-04",
+  },
+  { name: "Christmas", start_date: "2025-12-25", end_date: "2025-12-25" },
+  { name: "Boxing Day", start_date: "2025-12-25", end_date: "2025-12-25" },
+];
 
 export default function PremiumCalendar() {
-  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
-  const [view, setView] = useState<'calendar' | 'holidays'>('calendar');
+  const [currentDate, setCurrentDate] = useState(dayjs());
+  const [activeTab, setActiveTab] = useState("calendar");
 
-  const academicCalendarResponse = useSelector(
-    (state: any) => state.academicCalendar?.data
-  );
-
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const startOfMonth = currentDate.startOf("month");
+  const daysInMonth = currentDate.daysInMonth();
 
   const handlePreviousMonth = () => {
-    setCurrentDate(currentDate.subtract(1, 'month'));
+    setCurrentDate(currentDate.subtract(1, "month"));
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(currentDate.add(1, 'month'));
+    setCurrentDate(currentDate.add(1, "month"));
   };
 
-  const handleYearChange = (event: SelectChangeEvent<number>) => {
-    const newYear = Number(event.target.value);
-    setCurrentDate(currentDate.year(newYear));
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentDate(dayjs(event.target.value));
   };
 
   const generateCalendar = () => {
-    const startOfMonth = currentDate.startOf('month');
-    const daysInMonth = currentDate.daysInMonth();
-    const currentYear = currentDate.year();
-    const calendarDays: JSX.Element[] = [];
-
+    const days = [];
     for (let i = 0; i < startOfMonth.day(); i++) {
-      calendarDays.push(<Box key={`empty-${i}`} />);
+      days.push(<div key={`empty-${i}`} className="day-cell empty"></div>);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = currentDate.date(day).format('YYYY-MM-DD');
-
-      const holiday = academicCalendarResponse?.find(
-        (event: any) =>
-          dayjs(event.start_date).startOf('day').year() === currentYear &&
-          dayjs(date).isBetween(
-            dayjs(event.start_date).startOf('day'),
-            dayjs(event.end_date).endOf('day'),
-            null,
-            '[]'
-          )
+      const date = currentDate.date(day).format("YYYY-MM-DD");
+      const holidays = mockHolidays.filter((holiday) =>
+        dayjs(date).isBetween(
+          dayjs(holiday.start_date).startOf("day"),
+          dayjs(holiday.end_date).endOf("day"),
+          null,
+          "[]"
+        )
       );
 
-      calendarDays.push(
-        <StyledDate
+      const isHoliday = holidays.length > 0;
+
+      days.push(
+        <div
           key={date}
-          sx={{
-            background: holiday ? '#f48665' : '',
-            position: 'relative',
-          }}
+          className={`day-cell ${isHoliday ? "holiday" : ""}`}
+          title={isHoliday ? holidays.map((h) => h.name).join(", ") : ""}
         >
-          <Typography
-            sx={{ fontSize: '18px', fontWeight: 'bold', color: '#000' }}
-          >
-            {day}
-          </Typography>
-          {holiday && (
-            <Typography
-              sx={{
-                fontSize: '12px',
-                fontWeight: 'medium',
-                position: 'absolute',
-                bottom: '4px',
-                textAlign: 'center',
-                color: '#ffffff',
-                padding: '2px',
-                borderRadius: '4px',
-                width: '100%',
-              }}
-            >
-              {holiday.name}
-            </Typography>
+          <div className="date-label">{day}</div>
+          {isHoliday && (
+            <div className="holiday-badges">
+              {holidays.slice(0, 2).map((holiday, index) => (
+                <span key={index} className="badge">
+                  {holiday.name}
+                </span>
+              ))}
+              {holidays.length > 2 && (
+                <span className="badge more-badge">
+                  +{holidays.length - 2} more
+                </span>
+              )}
+            </div>
           )}
-        </StyledDate>
+        </div>
       );
     }
 
-    return calendarDays;
+    return days;
   };
 
   const renderHolidayList = () => {
-    const holidays = academicCalendarResponse?.filter(
-      (event: any) => dayjs(event.start_date).year() === currentDate.year()
+    const holidays = mockHolidays.filter(
+      (holiday) => dayjs(holiday.start_date).year() === currentDate.year()
     );
 
-    return (
-      <Box>
-        {holidays && holidays.length > 0 ? (
-          holidays.map((holiday: any, index: number) => (
-            <Box
-              key={index}
-              sx={{
-                background: '#fff',
-                color: '#4fa2fa',
-                borderRadius: 2,
-                padding: 1.5,
-                marginBottom: 1,
-                boxShadow: '0px 5px 15px rgba(0,0,0,0.2)',
-              }}
-            >
-              <Typography variant="h6">{holiday.name}</Typography>
-              <Typography variant="body2">
-                {dayjs(holiday.start_date).format('DD MMM YYYY')} -{' '}
-                {dayjs(holiday.end_date).format('DD MMM YYYY')}
-              </Typography>
-            </Box>
-          ))
-        ) : (
-          <div className="no-holidays">
-            <Typography>No holidays found for this year.</Typography>
+    return holidays.length > 0 ? (
+      <div className="holiday-list">
+        {holidays.map((holiday, index) => (
+          <div key={index} className="list-item">
+            <strong>{holiday.name}</strong>
+            <div className="date-range">
+              {dayjs(holiday.start_date).format("DD MMM YYYY")} -{" "}
+              {dayjs(holiday.end_date).format("DD MMM YYYY")}
+            </div>
           </div>
-        )}
-      </Box>
+        ))}
+      </div>
+    ) : (
+      <div className="no-holidays">No holidays found for this year.</div>
     );
   };
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <GradientBox
-        sx={{
-          padding: 1.5,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        {view === 'calendar' && (
-          <IconButton
-            onClick={handlePreviousMonth}
-            color="inherit"
-            size="small"
-          >
-            <ArrowBackIos fontSize="small" />
-          </IconButton>
-        )}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {view === 'calendar' && (
-            <>
-              <Typography
-                variant="subtitle1"
-                sx={{ marginX: 1, fontWeight: 'bold' }}
-              >
-                {currentDate.format('MMMM')}
-              </Typography>
-
-              <Select
-                value={currentDate.year()}
-                onChange={handleYearChange}
-                sx={{
-                  color: 'white',
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  borderRadius: 1,
-                }}
-              >
-                {[...Array(11)].map((_, i) => {
-                  const year = dayjs().year() - 5 + i;
-                  return (
-                    <MenuItem key={year} value={year}>
-                      {year}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </>
-          )}
-          <Button
-            onClick={() =>
-              setView(view === 'calendar' ? 'holidays' : 'calendar')
-            }
-            variant="contained"
-            sx={{ marginLeft: 2, background: '#4fa2fa', color: 'white' }}
-          >
-            {view === 'calendar' ? 'View Holidays' : 'Back to Calendar'}
-          </Button>
+    <div className="container">
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <div className="d-flex align-items-center">
+          <button className="btn btn-light me-2" onClick={handlePreviousMonth}>
+            &lt;
+          </button>
+          <input
+            type="month"
+            className="form-control premium-date-picker me-2"
+            value={currentDate.format("YYYY-MM")}
+            onChange={handleDateChange}
+          />
+          <button className="btn btn-light ms-2" onClick={handleNextMonth}>
+            &gt;
+          </button>
         </div>
-
-        <IconButton onClick={handleNextMonth} color="inherit" size="small">
-          <ArrowForwardIos fontSize="small" />
-        </IconButton>
-      </GradientBox>
-
-      {view === 'calendar' ? (
-        <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap={0.5}>
-          {daysOfWeek.map((day) => (
-            <Typography
-              key={day}
-              sx={{ fontWeight: 'bold', textAlign: 'center' }}
+        <ul className="nav nav-tabs">
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "calendar" ? "active" : ""}`}
+              onClick={() => setActiveTab("calendar")}
             >
-              {day}
-            </Typography>
-          ))}
-          {generateCalendar()}
-        </Box>
-      ) : (
-        renderHolidayList()
-      )}
-    </Box>
+              Calendar View
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "list" ? "active" : ""}`}
+              onClick={() => setActiveTab("list")}
+            >
+              List View
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        {activeTab === "calendar" ? (
+          <div className="calendar-grid">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div className="day-header" key={day}>
+                {day}
+              </div>
+            ))}
+            {generateCalendar()}
+          </div>
+        ) : (
+          renderHolidayList()
+        )}
+      </div>
+
+      <style>{`
+        .calendar-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          width: 100%;
+          border: 1px solid #ccc;
+        }
+        .day-header,
+        .day-cell {
+          border: 1px solid #ccc;
+          text-align: center;
+          padding: 10px;
+          min-height: 100px;
+          position: relative;
+        }
+        .date-label {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          font-size: 12px;
+          font-weight: bold;
+          color: #888;
+        }
+        .day-cell.holiday {
+          background-color: #f9f2e8;
+        }
+        .holiday-badges {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          margin-top: 5px;
+        }
+        .badge {
+          background-color: #f48665;
+          color: white;
+          padding: 2px 5px;
+          border-radius: 3px;
+          font-size: 12px;
+        }
+        .more-badge {
+          background-color: #d9534f;
+        }
+
+        .holiday-list {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+        }
+        .list-item {
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          padding: 10px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          background-color: #fff;
+        }
+        .list-item .date-range {
+          color: #888;
+          font-size: 14px;
+          margin-top: 5px;
+        }
+        .no-holidays {
+          color: #555;
+          font-size: 16px;
+          text-align: center;
+        }
+        .premium-date-picker {
+          border: 1px solid #d4af37;
+          border-radius: 5px;
+          padding: 5px 10px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+          font-size: 16px;
+          color: #555;
+        }
+        .premium-date-picker:focus {
+          border-color: #b8860b;
+          outline: none;
+          box-shadow: 0 0 5px #b8860b;
+        }
+      `}</style>
+    </div>
   );
 }
