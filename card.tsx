@@ -78,4 +78,20 @@ function App() {
   );
 }
 
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch; /* Ensures columns stretch to match the tallest column */
+}
+
+.card {
+  height: 100%; /* Ensures cards take the full height available in the column */
+}
+
+.col-md-3,
+.col-md-6 {
+  display: flex;
+  flex-direction: column; /* Keeps content aligned within each column */
+}
+
 export default App;
