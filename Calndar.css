@@ -1,0 +1,118 @@
+<style>{`
+  .container {
+    padding: 15px;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .day-header, .day-cell {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+  }
+
+  .day-cell.holiday {
+    background-color: #ffe5e5;
+    border-color: #ffcccc;
+  }
+
+  .holiday-badges {
+    margin-top: 5px;
+  }
+
+  .holiday-badges .badge {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 12px;
+    background-color: #ff6666;
+    color: white;
+    border-radius: 4px;
+    padding: 2px 5px;
+  }
+
+  .holiday-badges .more-badge {
+    background-color: #ff3333;
+  }
+
+  .premium-date-picker {
+    max-width: 150px;
+  }
+
+  .holiday-list .list-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .holiday-list .list-item:last-child {
+    border-bottom: none;
+  }
+
+  .holiday-list .date-range {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .no-holidays {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .calendar-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .day-header, .day-cell {
+      font-size: 12px;
+      padding: 8px;
+    }
+
+    .premium-date-picker {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-item {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+
+    .nav-link {
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .calendar-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .day-header, .day-cell {
+      font-size: 10px;
+      padding: 5px;
+    }
+
+    .holiday-badges .badge {
+      font-size: 10px;
+    }
+
+    .premium-date-picker {
+      width: 100%;
+    }
+
+    .nav-tabs {
+      flex-wrap: nowrap;
+    }
+  }
+`}</style>
