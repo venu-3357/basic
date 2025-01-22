@@ -1,28 +1,28 @@
-import React from 'react';
-import Calendar from './components/Calendar';
-import Card from './components/Card';
-import peningImport from './assets/pening-activity.svg';
-
-import './App.scss';
+import Calendar from "./components/Calendar";
+import "./App.scss";
+import Card from "./components/Card";
+import peningImport from "./assets/pening-activity.svg";
 
 function App() {
   return (
     <>
       <div className="app-wrapper">
         <div className="container-fluid">
-          {/* First Row */}
-          <div className="row mb-3">
-            <div className="col-md-9">
-              <div className="card shadow">
+          {/* First Row: Banner and Right Card */}
+          <div className="row">
+            <div className="col-lg-9 col-md-8 col-sm-12 mb-3">
+              <div className="card shadow h-100">
                 <div className="card-body">
+                  <h3 className="card-title">Banner</h3>
+                  <p className="card-text">Banner Content</p>
                   <h3 className="card-title">Banner</h3>
                   <p className="card-text">Banner Content</p>
                 </div>
               </div>
             </div>
-            <div className="col-md-3">
+            <div className="col-lg-3 col-md-4 col-sm-12 mb-3">
               <Card
-                headerTitle="Right Card"
+                headerTitle="Basic Card"
                 icon={peningImport}
                 subHeader="Approvals & Actions"
               >
@@ -35,63 +35,78 @@ function App() {
                     <p className="mb-0">FSR</p>
                     <span>05</span>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <p className="mb-0">Additional Content</p>
-                    <span>10</span>
-                  </div>
                 </div>
               </Card>
             </div>
           </div>
 
-          {/* Second Row */}
-          <div className="row align-items-stretch">
-            <div className="col-md-3 mb-3">
-              <Card
-                headerTitle="Left Card"
-                icon={peningImport}
-                subHeader="Left Content"
-              >
-                <p>This is a left-side card.</p>
-              </Card>
+          {/* Second Row: Left Cards, Calendar, and Right Cards */}
+          <div className="row">
+            {/* Left Column */}
+            <div className="col-lg-2 col-md-3 col-sm-12 mb-3">
+              <div className="row">
+                {[...Array(3)].map((_, index) => (
+                  <div className="col-12 mb-3" key={index}>
+                    <Card
+                      headerTitle="Basic Card"
+                      icon={peningImport}
+                      subHeader="Approvals & Actions"
+                    >
+                      <div className="request-stats-wrapper d-flex flex-column gap-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <p className="mb-0">PFR</p>
+                          <span>05</span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <p className="mb-0">FSR</p>
+                          <span>05</span>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="col-md-6 mb-3">
-              <div className="card shadow">
-                <div className="card-body h-100">
+
+            {/* Calendar Section */}
+            <div className="col-lg-7 col-md-6 col-sm-12 mb-3">
+              <div className="card shadow h-100">
+                <div className="card-body">
                   <Calendar />
                 </div>
               </div>
             </div>
-            <div className="col-md-3 mb-3">
-              <Card
-                headerTitle="Right Card 2"
-                icon={peningImport}
-                subHeader="Additional Actions"
-              >
-                <p>Content for the right-side card in the second row.</p>
-              </Card>
+
+            {/* Right Column */}
+            <div className="col-lg-3 col-md-3 col-sm-12 mb-3">
+              <div className="row">
+                {[...Array(2)].map((_, index) => (
+                  <div className="col-12 mb-3" key={index}>
+                    <Card
+                      headerTitle="Basic Card"
+                      icon={peningImport}
+                      subHeader="Approvals & Actions"
+                    >
+                      <div className="request-stats-wrapper d-flex flex-column gap-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <p className="mb-0">PFR</p>
+                          <span>05</span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <p className="mb-0">FSR</p>
+                          <span>05</span>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </>
   );
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch; /* Ensures columns stretch to match the tallest column */
-}
-
-.card {
-  height: 100%; /* Ensures cards take the full height available in the column */
-}
-
-.col-md-3,
-.col-md-6 {
-  display: flex;
-  flex-direction: column; /* Keeps content aligned within each column */
 }
 
 export default App;
