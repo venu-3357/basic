@@ -1,124 +1,81 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import Calendar from './components/Calendar';
+import Card from './components/Card';
+import peningImport from './assets/pening-activity.svg';
 
-const Card = ({ header, icon, children }) => {
+import './App.scss';
+
+function App() {
   return (
-    <div className="card-container">
-      <div className="card-header">
-        <div className="icon-container">{icon}</div>
-        <h3 className="card-title">{header}</h3>
+    <>
+      <div className="app-wrapper">
+        <div className="container-fluid">
+          {/* First Row */}
+          <div className="row mb-3">
+            <div className="col-md-9">
+              <div className="card shadow">
+                <div className="card-body">
+                  <h3 className="card-title">Banner</h3>
+                  <p className="card-text">Banner Content</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <Card
+                headerTitle="Right Card"
+                icon={peningImport}
+                subHeader="Approvals & Actions"
+              >
+                <div className="request-stats-wrapper d-flex flex-column gap-2">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <p className="mb-0">PFR</p>
+                    <span>05</span>
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <p className="mb-0">FSR</p>
+                    <span>05</span>
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <p className="mb-0">Additional Content</p>
+                    <span>10</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          {/* Second Row */}
+          <div className="row align-items-stretch">
+            <div className="col-md-3 mb-3">
+              <Card
+                headerTitle="Left Card"
+                icon={peningImport}
+                subHeader="Left Content"
+              >
+                <p>This is a left-side card.</p>
+              </Card>
+            </div>
+            <div className="col-md-6 mb-3">
+              <div className="card shadow">
+                <div className="card-body h-100">
+                  <Calendar />
+                </div>
+              </div>
+            </div>
+            <div className="col-md-3 mb-3">
+              <Card
+                headerTitle="Right Card 2"
+                icon={peningImport}
+                subHeader="Additional Actions"
+              >
+                <p>Content for the right-side card in the second row.</p>
+              </Card>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="card-body">{children}</div>
-      <style>{`
-        .card-container {
-          background: linear-gradient(145deg, #ffffff, #f0f0f0);
-          border-radius: 15px;
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-          padding: 20px;
-          max-width: 100%;
-          margin: 10px auto;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card-container:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-        }
-
-        .card-header {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-          margin-bottom: 15px;
-        }
-
-        .icon-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: linear-gradient(135deg, #ff9d2f, #ffd700);
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-title {
-          font-size: 1.6rem;
-          font-weight: bold;
-          color: #333;
-          margin: 0;
-          flex: 1;
-        }
-
-        .card-body {
-          font-size: 1rem;
-          color: #555;
-          line-height: 1.6;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-          .card-container {
-            padding: 18px;
-          }
-
-          .card-title {
-            font-size: 1.4rem;
-          }
-
-          .icon-container {
-            width: 50px;
-            height: 50px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .card-container {
-            padding: 15px;
-          }
-
-          .card-title {
-            font-size: 1.2rem;
-          }
-
-          .icon-container {
-            width: 45px;
-            height: 45px;
-          }
-
-          .card-body {
-            font-size: 0.95rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .card-container {
-            padding: 12px;
-          }
-
-          .card-title {
-            font-size: 1rem;
-          }
-
-          .icon-container {
-            width: 40px;
-            height: 40px;
-          }
-
-          .card-body {
-            font-size: 0.85rem;
-          }
-        }
-      `}</style>
-    </div>
+    </>
   );
-};
+}
 
-Card.propTypes = {
-  header: PropTypes.string.isRequired,
-  icon: PropTypes.element.isRequired,
-  children: PropTypes.node.isRequired,
-};
-
-export default Card;
+export default App;
