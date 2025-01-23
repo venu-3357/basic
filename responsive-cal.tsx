@@ -1,216 +1,130 @@
-import React, { useState, useEffect } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import isBetween from "dayjs/plugin/isBetween";
-import "bootstrap/dist/css/bootstrap.min.css";
-import calendar from "../assets/calendar.svg";
-import listView from "../assets/list-view.svg";
-import calendarActive from "../assets/calendar-active.svg";
-import listViewActive from "../assets/list-view-active.svg";
-import leftArrow from "../assets/left-arrow.svg";
-import rightArrow from "../assets/right-arrow.svg";
-import fullScreenView from "../assets/full-screen-view.svg";
-import closeFill from "../assets/close-fill.svg";
+import Calendar from './components/Calendar';
+import './App.scss';
+import Card from './components/Card';
+import peningImport from './assets/pening-activity.svg';
+import banner from './assets/Info.svg';
 
-dayjs.extend(isBetween);
-
-interface Holiday {
-  name: string;
-  start_date: string;
-  end_date: string;
-}
-
-const mockHolidays: Holiday[] = [
-  { name: "New Year's Day", start_date: "2025-01-01", end_date: "2025-01-01" },
-  { name: "Family Day", start_date: "2025-01-01", end_date: "2025-01-01" },
-  { name: "Independence Day", start_date: "2025-07-04", end_date: "2025-07-04" },
-  { name: "Christmas", start_date: "2025-12-25", end_date: "2025-12-25" },
-];
-
-const Calendar: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
-  const [activeTab, setActiveTab] = useState<string>("calendar");
-  const [isFullView, setIsFullView] = useState<boolean>(false);
-  const [isMobileView, setIsMobileView] = useState<boolean>(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth <= 768);
-    };
-
-    handleResize(); // Check on initial load
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const startOfMonth = currentDate.startOf("month");
-  const daysInMonth = currentDate.daysInMonth();
-
-  const handlePreviousMonth = () => setCurrentDate(currentDate.subtract(1, "month"));
-  const handleNextMonth = () => setCurrentDate(currentDate.add(1, "month"));
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => setCurrentDate(dayjs(event.target.value));
-  const toggleFullView = () => setIsFullView(!isFullView);
-
-  const generateCalendar = () => {
-    const days: JSX.Element[] = [];
-    for (let i = 0; i < startOfMonth.day(); i++) {
-      days.push(<div key={`empty-${i}`} className="day-cell empty"></div>);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = currentDate.date(day).format("YYYY-MM-DD");
-      const holidays = mockHolidays.filter((holiday) =>
-        dayjs(date).isBetween(
-          dayjs(holiday.start_date).startOf("day"),
-          dayjs(holiday.end_date).endOf("day"),
-          null,
-          "[]"
-        )
-      );
-
-      const isHoliday = holidays.length > 0;
-
-      days.push(
-        <div
-          key={date}
-          className={`day-cell ${isHoliday ? "holiday" : ""}`}
-          title={isHoliday ? holidays.map((h) => h.name).join(", ") : ""}
-        >
-          <div className="date-label">{day}</div>
-          {isHoliday && (
-            <div className="holiday-badges">
-              {isMobileView ? (
-                <span className="badge">{holidays.length} holidays</span>
-              ) : (
-                holidays.slice(0, 2).map((holiday, index) => (
-                  <span key={index} className="badge">
-                    {holiday.name}
-                  </span>
-                ))
-              )}
-              {holidays.length > 2 && !isMobileView && (
-                <span className="badge more-badge">
-                  +{holidays.length - 2} more
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    return days;
-  };
-
-  const renderHolidayList = () => {
-    const holidays = mockHolidays.filter(
-      (holiday) => dayjs(holiday.start_date).year() === currentDate.year()
-    );
-
-    return holidays.length > 0 ? (
-      <div className="holiday-list">
-        {holidays.map((holiday, index) => (
-          <div key={index} className="list-item">
-            <strong>{isMobileView ? `${index + 1}` : holiday.name}</strong>
-            {!isMobileView && (
-              <div className="date-range">
-                {dayjs(holiday.start_date).format("DD MMM YYYY")} -{" "}
-                {dayjs(holiday.end_date).format("DD MMM YYYY")}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    ) : (
-      <div className="no-holidays">No holidays found for this year.</div>
-    );
-  };
-
+function App() {
   return (
-    <div className={`container ${isFullView ? "full-view-container" : ""}`}>
-      <div className="d-flex align-items-center justify-content-end mb-3">
-        <ul className="nav calendar-list-view me-2 pe-2">
-          <li className="nav-item">
-            <button
-              className={`calendar-btn ${activeTab === "calendar" ? "active" : ""}`}
-              onClick={() => setActiveTab("calendar")}
-            >
-              <img
-                src={activeTab === "calendar" ? calendar : calendarActive}
-                height={16}
-                alt="calendar-view"
-              />
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`list-view-btn ${activeTab === "list" ? "active" : ""}`}
-              onClick={() => setActiveTab("list")}
-            >
-              <img
-                src={activeTab === "list" ? listView : listViewActive}
-                alt="list-view"
-              />
-            </button>
-          </li>
-        </ul>
-        <div className="d-flex align-items-center calendar-picker-wrapper me-2 pe-2">
-          <button className="btn btn-light month-change-btn" onClick={handlePreviousMonth}>
-            <img src={leftArrow} alt="left-arrow" />
-          </button>
-          <input
-            type="month"
-            className="form-control premium-date-picker me-2 pb-0 pt-0"
-            value={currentDate.format("YYYY-MM")}
-            onChange={handleDateChange}
-          />
-          <button className="btn btn-light month-change-btn" onClick={handleNextMonth}>
-            <img src={rightArrow} alt="right-arrow" />
-          </button>
-        </div>
-        <button className="btn full-view-btn" onClick={toggleFullView}>
-          <img src={isFullView ? fullScreenView : closeFill} alt="full-screen" />
-        </button>
-      </div>
-
-      <div>
-        {activeTab === "calendar" ? (
-          <div className={`calendar-grid ${isFullView ? "expanded" : ""}`}>
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div className="day-header" key={day}>
-                {day}
+    <div className="app-wrapper">
+      <div className="container-fluid">
+        {/* Row 1 */}
+        <div className="row">
+          {/* Left Column */}
+          <div className="col-lg-9 col-md-8 col-sm-12 mb-3 left-column">
+            <div className="card shadow">
+              <div className="card-body p-0">
+                <img src={banner} width="100%" />
               </div>
-            ))}
-            {generateCalendar()}
+            </div>
           </div>
-        ) : (
-          renderHolidayList()
-        )}
+
+          {/* Right Column */}
+          <div className="col-lg-3 col-md-4 col-sm-12 mb-3 right-column">
+            <Card
+              headerTitle="Basic Card"
+              icon={peningImport}
+              subHeader="Approvals & Actions"
+            >
+              <div className="request-stats-wrapper d-flex gap-2">
+                <div className="d-flex justify-content-between align-items-center pfr-stats-wrapper">
+                  <p className="mb-0 f-14">PFR</p>
+                  <span>05</span>
+                </div>
+                <div className="d-flex justify-content-between align-items-center fsr-stats-wrapper">
+                  <p className="mb-0 f-14">FSR</p>
+                  <span>05</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Row 2 */}
+        <div className="row">
+          {/* Calendar Section */}
+          <div className="col-lg-7 col-md-6 col-sm-12 mb-3">
+            <div className="card shadow h-100">
+              <div className="card-body">
+                <Calendar />
+              </div>
+            </div>
+          </div>
+
+          {/* Cards Section */}
+          <div className="col-lg-5 col-md-6 col-sm-12 mb-3">
+            <div className="row">
+              {[...Array(2)].map((_, index) => (
+                <div className="col-12 mb-3" key={index}>
+                  <Card
+                    headerTitle="Basic Card"
+                    icon={peningImport}
+                    subHeader="Approvals & Actions"
+                  >
+                    <div className="request-stats-wrapper d-flex gap-2">
+                      <div className="d-flex justify-content-between align-items-center pfr-stats-wrapper">
+                        <p className="mb-0 f-14">PFR</p>
+                        <span className="pfr-fsr-count">05</span>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center fsr-stats-wrapper">
+                        <p className="mb-0 f-14">FSR</p>
+                        <span className="pfr-fsr-count">05</span>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
-
-export default Calendar;
-
-@media (max-width: 768px) {
-  .calendar-grid {
-    grid-template-columns: repeat(7, 1fr);
-  }
-
-  .holiday-badges {
-    font-size: 0.8rem;
-  }
-
-  .day-cell {
-    padding: 0.5rem;
-  }
-
-  .day-header {
-    font-size: 0.9rem;
-  }
-
-  .list-item strong {
-    font-size: 0.9rem;
-  }
 }
 
+export default App;
+
+
+.app-wrapper .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Ensures consistent spacing between rows */
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  flex-shrink: 0;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align content to the top */
+}
+
+.right-column {
+  gap: 15px; /* Adds consistent spacing between cards in the right column */
+}
+
+.row > [class*="col-"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card.shadow {
+  height: auto; /* Allows cards to adjust to their content */
+}
+
+.container-fluid {
+  display: grid;
+  grid-template-columns: 1fr; /* Full width for mobile, adjust as needed */
+  gap: 20px; /* Consistent gap for rows */
+}
