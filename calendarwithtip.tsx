@@ -13,7 +13,7 @@ const mockHolidays = [
   { name: "Boxing Day", start_date: "2025-12-26", end_date: "2025-12-26" },
 ];
 
-function HolidayTooltip({ holiday }) {
+function HolidayTooltip({ holiday }: { holiday: { name: string; start_date: string; end_date: string } }) {
   return (
     <div className="tooltip-content">
       <h5>{holiday.name}</h5>
@@ -29,7 +29,11 @@ function HolidayTooltip({ holiday }) {
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [activeTab, setActiveTab] = useState("calendar");
-  const [tooltip, setTooltip] = useState({
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean;
+    component: React.ReactElement | null;
+    position: { x: number; y: number };
+  }>({
     visible: false,
     component: null,
     position: { x: 0, y: 0 },
@@ -46,13 +50,13 @@ export default function Calendar() {
     setCurrentDate(currentDate.add(1, "month"));
   };
 
-  const handleDateChange = (event) => {
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentDate(dayjs(event.target.value));
   };
 
-  const handleBadgeClick = (event, holiday) => {
-    event.stopPropagation(); // Prevent outside click from closing the tooltip
-    const rect = event.target.getBoundingClientRect();
+  const handleBadgeClick = (event: React.MouseEvent, holiday: { name: string; start_date: string; end_date: string }) => {
+    event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
 
     setTooltip({
       visible: true,
