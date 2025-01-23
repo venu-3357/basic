@@ -191,3 +191,26 @@ const Calendar: React.FC = () => {
 };
 
 export default Calendar;
+
+@media (max-width: 768px) {
+  .calendar-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .holiday-badges {
+    font-size: 0.8rem;
+  }
+
+  .day-cell {
+    padding: 0.5rem;
+  }
+
+  .day-header {
+    font-size: 0.9rem;
+  }
+
+  .list-item strong {
+    font-size: 0.9rem;
+  }
+}
+
