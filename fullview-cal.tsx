@@ -118,7 +118,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className={`container ${isFullView ? "full-view" : ""}`}>
+    <div className={`container ${isFullView ? "full-view-container" : ""}`}>
       <div className="d-flex align-items-center justify-content-end mb-3">
         <ul className="nav calendar-list-view me-2 pe-2">
           <li className="nav-item">
@@ -194,3 +194,22 @@ const Calendar: React.FC = () => {
 };
 
 export default Calendar;
+
+
+.full-view-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 1050;
+  overflow: auto;
+  padding: 20px;
+}
+
+.expanded {
+  grid-template-rows: repeat(6, 1fr);
+  grid-auto-rows: 1fr;
+  height: calc(100vh - 120px);
+}
