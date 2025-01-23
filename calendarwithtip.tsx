@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -39,6 +39,8 @@ export default function Calendar() {
     position: { x: 0, y: 0 },
   });
 
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
   const startOfMonth = currentDate.startOf("month");
   const daysInMonth = currentDate.daysInMonth();
 
@@ -54,14 +56,17 @@ export default function Calendar() {
     setCurrentDate(dayjs(event.target.value));
   };
 
-  const handleBadgeClick = (event: React.MouseEvent, holiday: { name: string; start_date: string; end_date: string }) => {
+  const handleBadgeClick = (
+    event: React.MouseEvent,
+    holiday: { name: string; start_date: string; end_date: string }
+  ) => {
     event.stopPropagation();
-    const rect = event.currentTarget.getBoundingClientRect();
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
 
     setTooltip({
       visible: true,
       component: <HolidayTooltip holiday={holiday} />,
-      position: { x: rect.left - 220, y: rect.top + window.scrollY - 10 },
+      position: { x: rect.right + 10, y: rect.top + window.scrollY },
     });
   };
 
@@ -179,11 +184,17 @@ export default function Calendar() {
       {tooltip.visible && (
         <div
           className="custom-tooltip"
+          ref={tooltipRef}
           style={{
             position: "absolute",
             top: tooltip.position.y,
             left: tooltip.position.x,
             zIndex: 1000,
+            backgroundColor: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "5px",
+            padding: "10px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
           }}
         >
           {tooltip.component}
