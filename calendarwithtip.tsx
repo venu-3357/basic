@@ -6,17 +6,34 @@ import "bootstrap/dist/css/bootstrap.min.css";
 dayjs.extend(isBetween);
 
 const mockHolidays = [
-  { name: "New Year's Day", start_date: '2025-01-01', end_date: '2025-01-01' },
-  { name: 'Family Day', start_date: '2025-01-02', end_date: '2025-01-02' },
-  { name: 'Independence Day', start_date: '2025-07-04', end_date: '2025-07-04' },
-  { name: 'Christmas', start_date: '2025-12-25', end_date: '2025-12-25' },
-  { name: 'Boxing Day', start_date: '2025-12-26', end_date: '2025-12-26' }
+  { name: "New Year's Day", start_date: "2025-01-01", end_date: "2025-01-01" },
+  { name: "Family Day", start_date: "2025-01-02", end_date: "2025-01-02" },
+  { name: "Independence Day", start_date: "2025-07-04", end_date: "2025-07-04" },
+  { name: "Christmas", start_date: "2025-12-25", end_date: "2025-12-25" },
+  { name: "Boxing Day", start_date: "2025-12-26", end_date: "2025-12-26" },
 ];
+
+function HolidayTooltip({ holiday }) {
+  return (
+    <div className="tooltip-content">
+      <h5>{holiday.name}</h5>
+      <p>
+        Start Date: {dayjs(holiday.start_date).format("DD MMM YYYY")}
+        <br />
+        End Date: {dayjs(holiday.end_date).format("DD MMM YYYY")}
+      </p>
+    </div>
+  );
+}
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [activeTab, setActiveTab] = useState("calendar");
-  const [tooltip, setTooltip] = useState({ visible: false, content: "", position: { x: 0, y: 0 } });
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    component: null,
+    position: { x: 0, y: 0 },
+  });
 
   const startOfMonth = currentDate.startOf("month");
   const daysInMonth = currentDate.daysInMonth();
@@ -34,18 +51,18 @@ export default function Calendar() {
   };
 
   const handleBadgeClick = (event, holiday) => {
+    event.stopPropagation(); // Prevent outside click from closing the tooltip
     const rect = event.target.getBoundingClientRect();
+
     setTooltip({
       visible: true,
-      content: `${holiday.name} (${dayjs(holiday.start_date).format("DD MMM YYYY")} - ${dayjs(
-        holiday.end_date
-      ).format("DD MMM YYYY")})`,
-      position: { x: rect.left - 250, y: rect.top + window.scrollY }
+      component: <HolidayTooltip holiday={holiday} />,
+      position: { x: rect.left - 220, y: rect.top + window.scrollY - 10 },
     });
   };
 
   const handleOutsideClick = () => {
-    setTooltip({ visible: false, content: "", position: { x: 0, y: 0 } });
+    setTooltip({ visible: false, component: null, position: { x: 0, y: 0 } });
   };
 
   const generateCalendar = () => {
@@ -147,26 +164,25 @@ export default function Calendar() {
             {generateCalendar()}
           </div>
         ) : (
-          <div>No holidays for this view.</div>
+          <div className="holiday-list">
+            {mockHolidays.map((holiday, index) => (
+              <HolidayTooltip key={index} holiday={holiday} />
+            ))}
+          </div>
         )}
       </div>
 
       {tooltip.visible && (
         <div
-          className="tooltip-container"
+          className="custom-tooltip"
           style={{
             position: "absolute",
-            left: tooltip.position.x,
             top: tooltip.position.y,
-            width: "200px",
-            padding: "10px",
-            backgroundColor: "white",
-            border: "1px solid black",
-            borderRadius: "5px",
+            left: tooltip.position.x,
             zIndex: 1000,
           }}
         >
-          {tooltip.content}
+          {tooltip.component}
         </div>
       )}
     </div>
