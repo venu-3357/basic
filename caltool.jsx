@@ -68,7 +68,7 @@ const Calendar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleTooltipShow = (e) => {
+  const handleTooltipShow = (e, holiday) => {
     const rect = e.target.getBoundingClientRect();
     setTooltipContent({
       subMilestone: '9.1 Full Use Approved',
@@ -80,11 +80,12 @@ const Calendar = () => {
       reCommitDate: '01/16/2025',
       targetDate: '12/24/2024',
       actualDate: '12/24/2024',
+      holidayName: holiday.name,
     });
 
     setTooltipPosition({
       top: rect.top + window.scrollY + 10, // Adjust for scroll and small gap
-      left: rect.left + window.scrollX + 10,
+      left: rect.left + window.scrollX - 180, // Position to the left of the holiday
     });
   };
 
@@ -115,8 +116,6 @@ const Calendar = () => {
           key={date}
           className={`${classes.dayCell} ${isHoliday ? 'holiday' : ''}`}
           title={isHoliday ? holidays.map((h) => h.name).join(', ') : ''}
-          onMouseEnter={handleTooltipShow}
-          onMouseLeave={handleTooltipHide}
         >
           <div className={`${classes.dateLabel}`}>{day}</div>
           {isHoliday && (
@@ -128,8 +127,7 @@ const Calendar = () => {
                   <span
                     key={index}
                     className={`${classes.badge}`}
-                    onClick={togglePopover}
-                    ref={buttonRef}
+                    onClick={(e) => handleTooltipShow(e, holiday)}
                   >
                     {holiday.name}
                   </span>
@@ -253,6 +251,7 @@ const Calendar = () => {
           <p><strong>Re-Commit Date:</strong> {tooltipContent.reCommitDate}</p>
           <p><strong>Target Date:</strong> {tooltipContent.targetDate}</p>
           <p><strong>Actual Date:</strong> {tooltipContent.actualDate}</p>
+          <p><strong>Holiday:</strong> {tooltipContent.holidayName}</p>
         </div>
       )}
 
@@ -277,3 +276,82 @@ const Calendar = () => {
 };
 
 export default Calendar;
+
+
+/* Tooltip container */
+.tooltip-content {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+  max-width: 250px;
+  z-index: 1050;
+  font-size: 14px;
+  color: #333;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+/* Tooltip visible state */
+.tooltip-content.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Tooltip arrow */
+.tooltip-content::after {
+  content: '';
+  position: absolute;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent transparent #fff;
+  top: 50%;
+  left: -8px;
+  transform: translateY(-50%);
+}
+
+/* Tooltip header */
+.tooltip-content p:first-child {
+  font-size: 16px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+/* Tooltip detail labels */
+.tooltip-content p strong {
+  color: #555;
+  font-weight: normal;
+}
+
+/* Tooltip detail values */
+.tooltip-content p {
+  margin: 8px 0;
+  line-height: 1.4;
+  font-size: 13px;
+}
+
+/* Tooltip badges (like action owner, dates) */
+.tooltip-content .badge {
+  display: inline-block;
+  padding: 6px 10px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* Styling for the hover effect on the tooltip */
+.tooltip-content:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Tooltip with long content or multiple details */
+.tooltip-content p:last-child {
+  margin-bottom: 0;
+}
