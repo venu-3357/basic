@@ -195,4 +195,43 @@ const Calendar = () => {
 
 export default Calendar;
 
+.tooltip {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 300px;
+  animation: fadeIn 0.3s ease;
+}
+
+.tooltip-header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.tooltip-content {
+  font-size: 14px;
+  color: #333;
+
+  p {
+    margin: 5px 0;
+  }
+
+  strong {
+    font-weight: bold;
+  }
+}
+
+.close-tooltip {
+  margin-top: 10px;
+  display: block;
+  width: 100%;
+}
+
 
